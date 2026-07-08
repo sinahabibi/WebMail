@@ -1,0 +1,444 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using WebMail.Web
+@inject IHtmlLocalizer<SharedResource> Localizer
+@{
+    var isRtl = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
+    var currentLang = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+}
+<!DOCTYPE html>
+<html lang="@currentLang" dir="@(isRtl ? "rtl" : "ltr")" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@Localizer["app_name"] - @ViewData["Title"]</title>
+
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+        darkMode: 'class',
+        theme: {
+        extend: {
+        fontFamily: {
+        sans: ['Vazirmatn', 'Inter', 'sans-serif'],
+        },
+        colors: {
+        brand: {
+        50: '#eef2ff',
+        100: '#e0e7ff',
+        500: '#6366f1',
+        600: '#4f46e5',
+        700: '#4338ca',
+        900: '#312e81',
+        }
+        }
+        }
+        }
+        }
+    </script>
+
+    <script src="https://unpkg.com/@@phosphor-icons/web"></script>
+
+    <style>
+        ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+        background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+        background: #475569;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+        }
+
+        body {
+        transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        html[lang="en"] body {
+        font-family: 'Inter', sans-serif;
+        text-align: left;
+        }
+
+        html[lang="fa"] body {
+        font-family: 'Vazirmatn', sans-serif;
+        text-align: right;
+        }
+
+        .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        }
+
+        .ph, .ph-fill {
+        direction: ltr;
+        display: inline-block;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+        display: none;
+        }
+
+        .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        }
+
+        .resizer {
+        width: 4px;
+        cursor: col-resize;
+        background-color: transparent;
+        transition: background-color 0.2s;
+        z-index: 20;
+        position: relative;
+        }
+
+        .resizer:hover, .resizer.active {
+        background-color: #6366f1;
+        }
+
+        .sidebar-mini {
+        width: 4.5rem !important;
+        }
+
+        .sidebar-mini .sidebar-text, .sidebar-mini .sidebar-badge, .sidebar-mini .compose-text, .sidebar-mini .apps-text, .sidebar-mini .labels-header, .sidebar-mini .app-btn span {
+        display: none;
+        }
+
+        .sidebar-mini .sidebar-item {
+        justify-content: center !important;
+        padding-inline-start: 0 !important;
+        padding-inline-end: 0 !important;
+        }
+
+        .sidebar-mini .sidebar-item i {
+        margin: 0 !important;
+        font-size: 1.5rem !important;
+        }
+
+        .sidebar-mini #compose-btn {
+        padding: 0.75rem !important;
+        justify-content: center;
+        border-radius: 50%;
+        width: 3rem;
+        height: 3rem;
+        margin: 0 auto;
+        }
+
+        .sidebar-mini #compose-btn i, .sidebar-mini .app-btn i {
+        margin: 0;
+        font-size: 1.5rem;
+        }
+
+        .sidebar-mini .app-btn {
+        padding: 0.5rem;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900 dark:bg-slate-900 dark:text-gray-100 h-screen w-screen overflow-hidden flex flex-col font-sans transition-all">
+
+    <header class="h-16 flex items-center justify-between px-3 md:px-6 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 z-30 shrink-0 relative">
+        <div class="flex items-center gap-2 md:gap-4 w-auto md:w-48 lg:w-64 shrink-0 transition-all" id="header-logo-area">
+            <button id="sidebar-toggle-btn" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-gray-400 transition-colors">
+                <i class="ph ph-list text-2xl"></i>
+            </button>
+            <div class="flex items-center gap-2 text-brand-600 dark:text-brand-500 overflow-hidden">
+                <i class="ph-fill ph-paper-plane-tilt text-2xl md:text-3xl shrink-0"></i>
+                <span class="text-xl md:text-2xl font-bold tracking-tight hidden sm:block whitespace-nowrap header-app-name">@Localizer["app_name"]</span>
+            </div>
+        </div>
+
+        <div class="hidden md:block flex-1 max-w-3xl px-4 lg:px-8">
+            <div class="relative group">
+                <i class="ph ph-magnifying-glass absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-500 text-lg"></i>
+                <input type="text" id="search-input" placeholder="@Localizer["search_placeholder"]"
+                       class="w-full bg-gray-100 dark:bg-slate-900/50 border border-transparent focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 rounded-lg py-2.5 pe-10 ps-12 text-sm outline-none transition-all dark:text-gray-100 dark:placeholder-gray-500 shadow-sm">
+                <button class="absolute start-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i class="ph ph-sliders-horizontal text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1 sm:gap-3 justify-end">
+            <!-- فرم‌های ارسال استاتیک برای تغییر زبان -->
+            <form id="lang-fa-form" asp-controller="Home" asp-action="ChangeLanguage" method="post" class="hidden">
+                <input type="hidden" name="culture" value="fa" />
+                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+            </form>
+            <form id="lang-en-form" asp-controller="Home" asp-action="ChangeLanguage" method="post" class="hidden">
+                <input type="hidden" name="culture" value="en" />
+                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+            </form>
+
+            <div class="relative">
+                <button id="lang-btn" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-gray-400 transition-colors flex items-center gap-1">
+                    <i class="ph ph-globe text-xl"></i>
+                    <span id="current-lang-text" class="text-xs font-bold uppercase hidden sm:inline">@currentLang</span>
+                </button>
+                <div id="lang-menu" class="absolute end-0 mt-2 w-32 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hidden flex-col py-2 z-50">
+                    <button type="button" onclick="document.getElementById('lang-fa-form').submit();" class="w-full text-start px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700/50 flex justify-between items-center">
+                        فارسی @if (currentLang == "fa") {
+                        <i class="ph-fill ph-check text-brand-500"></i>
+                    }
+                </button>
+                <button type="button" onclick="document.getElementById('lang-en-form').submit();" class="w-full text-start px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700/50 flex justify-between items-center">
+                    English @if (currentLang == "en") {
+                    <i class="ph-fill ph-check text-brand-500"></i>
+                }
+            </button>
+        </div>
+    </div>
+
+    <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-gray-400 transition-colors">
+        <i id="theme-icon" class="ph ph-moon text-xl"></i>
+    </button>
+
+    <div class="relative ms-1">
+        <button id="profile-btn" class="h-8 w-8 md:h-9 md:w-9 rounded-full bg-gray-200 dark:bg-slate-700 p-0.5 cursor-pointer flex items-center justify-center relative">
+            <img src="https://placehold.co/100x100/1e293b/ffffff?text=ME" alt="User" class="w-full h-full rounded-full border border-gray-300 dark:border-slate-600 object-cover">
+            <div class="absolute bottom-0 end-0 w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-slate-800 rounded-full"></div>
+        </button>
+
+        <div id="profile-menu" class="absolute end-0 mt-2 w-64 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hidden flex-col py-2 z-50">
+            <div class="px-4 py-3 border-b border-gray-100 dark:border-slate-700">
+                <p class="text-sm font-bold text-gray-900 dark:text-white">@Localizer["user_name"]</p>
+            </div>
+            <div class="border-t border-gray-100 dark:border-slate-700 py-1">
+                <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
+                    <i class="ph ph-sign-out text-lg"></i> <span>@Localizer["logout"]</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</header>
+
+<div class="flex-1 flex overflow-hidden relative">
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/60 z-20 hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0"></div>
+
+    <aside id="sidebar" class="absolute lg:relative w-64 h-full bg-white dark:bg-slate-800 border-e border-gray-200 dark:border-slate-700 flex flex-col transition-all duration-300 ease-in-out -translate-x-full lg:translate-x-0 rtl:translate-x-full rtl:lg:translate-x-0 z-30 shrink-0">
+        <div class="p-4 shrink-0 transition-all">
+            <button id="compose-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-500/30 rounded-xl py-3 px-4 flex items-center justify-center gap-2 font-medium transition-all transform hover:scale-[1.02] active:scale-95">
+                <i class="ph ph-pencil-simple text-xl shrink-0"></i>
+                <span class="compose-text whitespace-nowrap">@Localizer["compose"]</span>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-3 py-2 space-y-6">
+            <div class="space-y-1">
+
+                @await Component.InvokeAsync("SidebarNav", new { currentFolder = ViewBag.CurrentFolder ?? "inbox" })
+
+                <div class="my-2 border-t border-gray-100 dark:border-slate-700 mx-2"></div>
+
+                <a href="@Url.Action("Trash", "Home")" class="sidebar-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors @(ViewBag.CurrentFolder == "trash" ? "bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400 font-medium" : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700/50")">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <i class="ph ph-trash text-lg shrink-0"></i>
+                        <span class="sidebar-text truncate">@Localizer["trash"]</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <main id="list-pane" class="h-full flex flex-col bg-white dark:bg-slate-800 shrink-0 z-10 w-full md:w-[380px]" style="min-width: 250px; max-width: 600px;">
+
+        <form method="post" action="@Url.Action("Delete", "Home", new { folder = ViewBag.CurrentFolder ?? "inbox" })" class="h-full flex flex-col m-0 p-0 w-full">
+            <div class="px-4 py-2 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center">
+                        <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 cursor-pointer">
+                        <button type="button" class="p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-700 rounded ms-1"><i class="ph ph-caret-down text-xs"></i></button>
+                    </div>
+                    <button type="submit" class="p-1.5 text-gray-500 hover:text-red-600 dark:hover:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-slate-700 transition-colors" title="@Localizer["action_delete"]">
+                        <i class="ph ph-trash text-lg"></i>
+                    </button>
+                    <a href="@Url.Action("Index", "Home")" class="p-1.5 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
+                        <i class="ph ph-arrows-clockwise text-lg"></i>
+                    </a>
+                </div>
+                <div class="flex items-center text-xs text-gray-500 dark:text-gray-400 gap-1">
+                    <span dir="auto">۱-۲۰ / ۱۲۴</span>
+                    <div class="flex ms-2">
+                        <button type="button" class="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded rtl:rotate-180"><i class="ph ph-caret-left"></i></button>
+                        <button type="button" class="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded rtl:rotate-180"><i class="ph ph-caret-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            @await Component.InvokeAsync("EmailList", new { folder = ViewBag.CurrentFolder ?? "inbox" })
+        </form>
+    </main>
+
+    @RenderBody()
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+    // --- Theme Logic ---
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const html = document.documentElement;
+
+    function updateThemeIcon() {
+    if (html.classList.contains('dark')) {
+    themeIcon.classList.replace('ph-moon', 'ph-sun');
+    } else {
+    themeIcon.classList.replace('ph-sun', 'ph-moon');
+    }
+    }
+
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    html.classList.add('dark');
+    }
+    updateThemeIcon();
+
+    themeToggleBtn.addEventListener('click', () => {
+    html.classList.toggle('dark');
+    localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+    updateThemeIcon();
+    });
+
+    // --- Language Menu Toggle ---
+    const langBtn = document.getElementById('lang-btn');
+    const langMenu = document.getElementById('lang-menu');
+
+    langBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    langMenu.classList.toggle('hidden');
+    langMenu.classList.toggle('flex');
+    });
+
+  
+    // --- Sidebar Toggle Logic (Mini Desktop & Mobile Overlay) ---
+    const sidebarBtn = document.getElementById('sidebar-toggle-btn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    let isSidebarMini = false;
+    sidebarBtn.addEventListener('click', () => {
+    if (window.innerWidth >= 1024) {
+    // Desktop: Toggle Mini mode
+    isSidebarMini = !isSidebarMini;
+    if (isSidebarMini) {
+    sidebar.classList.add('sidebar-mini');
+    } else {
+    sidebar.classList.remove('sidebar-mini');
+    }
+    } else {
+    // Mobile: Toggle Drawer
+    // RTL/LTR logic for drawer is handled by Tailwind classes (rtl:translate-x-full)
+    // We just need to toggle classes to move it to 0
+    if (sidebar.classList.contains('-translate-x-full') || sidebar.classList.contains('rtl:translate-x-full')) {
+    // Open
+    sidebar.classList.remove('-translate-x-full', 'rtl:translate-x-full');
+    sidebar.classList.add('translate-x-0', 'rtl:translate-x-0');
+    sidebarOverlay.classList.remove('hidden');
+    setTimeout(() => sidebarOverlay.classList.remove('opacity-0'), 10);
+    } else {
+    // Close
+    closeMobileSidebar();
+    }
+    }
+    });
+    function closeMobileSidebar() {
+    sidebar.classList.add('-translate-x-full', 'rtl:translate-x-full');
+    sidebar.classList.remove('translate-x-0', 'rtl:translate-x-0');
+    sidebarOverlay.classList.add('opacity-0');
+    setTimeout(() => sidebarOverlay.classList.add('hidden'), 300);
+    }
+
+    sidebarOverlay.addEventListener('click', closeMobileSidebar);
+    // --- Resizer Logic ---
+    const resizer = document.getElementById('resizer');
+    const listPane = document.getElementById('list-pane');
+    let isResizing = false;
+
+    // این شرط (if) اضافه شد تا از خطای null جلوگیری کند
+    if (resizer && listPane) {
+    resizer.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    resizer.classList.add('active');
+    document.body.style.cursor = 'col-resize';
+    e.preventDefault(); // Prevent text selection
+    });
+    document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+
+    let delta = e.movementX;
+    let currentWidth = listPane.offsetWidth;
+    let newWidth;
+
+    if (document.documentElement.getAttribute('dir') === 'rtl') {
+    newWidth = currentWidth - delta;
+    } else {
+    newWidth = currentWidth + delta;
+    }
+
+    if (newWidth > 250 && newWidth < 600) {
+    listPane.style.width = `${newWidth}px`;
+    listPane.style.flex = 'none';
+    }
+    });
+    document.addEventListener('mouseup', () => {
+    if(isResizing) {
+    isResizing = false;
+    resizer.classList.remove('active');
+    document.body.style.cursor = 'default';
+    }
+    });
+    }
+
+
+    // --- Dropdown & Mobile view Closures ---
+    const profileBtn = document.getElementById('profile-btn');
+    const profileMenu = document.getElementById('profile-menu');
+
+    profileBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    profileMenu.classList.toggle('hidden');
+    profileMenu.classList.toggle('flex');
+    langMenu.classList.add('hidden'); // Close other menu
+    });
+    document.addEventListener('click', (e) => {
+    if (!profileMenu.contains(e.target) && !profileBtn.contains(e.target)) {
+    profileMenu.classList.add('hidden');
+    profileMenu.classList.remove('flex');
+    }
+    if (!langMenu.contains(e.target) && !langBtn.contains(e.target)) {
+    langMenu.classList.add('hidden');
+    langMenu.classList.remove('flex');
+    }
+    });
+    // Mobile detail view mock back button
+    const mobileBackBtn = document.getElementById('mobile-back-btn');
+    const detailPane = document.getElementById('detail-pane');
+    if(mobileBackBtn && detailPane) {
+    mobileBackBtn.addEventListener('click', () => {
+    // The classes depend on LTR/RTL, but a simple way is just hide it on mobile
+    detailPane.classList.add('hidden');
+    });
+    }
+    });
+</script>
+</body>
+</html>

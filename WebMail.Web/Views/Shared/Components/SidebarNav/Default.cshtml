@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using WebMail.Web
+@inject IHtmlLocalizer<SharedResource> Localizer
+@model dynamic
+@{
+    var currentFolder = ViewBag.CurrentFolder as string;
+}
+
+<nav class="space-y-1">
+    <a href="@Url.Action("Index", "Home")" class="flex items-center justify-between px-3 py-2 rounded-lg transition-colors group @(currentFolder == "inbox" ? "bg-brand-50 dark:bg-slate-700/50 text-brand-700 dark:text-brand-400" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700/50")">
+        <div class="flex items-center gap-3">
+            <i class="ph-fill ph-tray text-xl @(currentFolder == "inbox" ? "text-brand-600 dark:text-brand-400" : "text-gray-500 group-hover:text-brand-600 dark:group-hover:text-brand-400") transition-colors"></i>
+            <span class="sidebar-text font-bold text-sm">@Localizer["inbox"]</span>
+        </div>
+
+        @if (Model.InboxUnread > 0)
+        {
+            <span class="sidebar-badge bg-brand-100 text-brand-700 dark:bg-brand-900/50 dark:text-brand-400 py-0.5 px-2 rounded-full text-xs font-bold">@Model.InboxUnread</span>
+        }
+    </a>
+
+    <a href="@Url.Action("Sent", "Home")" class="flex items-center justify-between px-3 py-2 rounded-lg transition-colors group @(currentFolder == "sent" ? "bg-brand-50 dark:bg-slate-700/50 text-brand-700 dark:text-brand-400" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700/50")">
+        <div class="flex items-center gap-3">
+            <i class="ph ph-paper-plane-right text-xl @(currentFolder == "sent" ? "text-brand-600 dark:text-brand-400" : "text-gray-500 group-hover:text-brand-600 dark:group-hover:text-brand-400") transition-colors"></i>
+            <span class="sidebar-text font-medium text-sm">@Localizer["sent"]</span>
+        </div>
+    </a>
+
+    <a href="@Url.Action("Drafts", "Home")" class="flex items-center justify-between px-3 py-2 rounded-lg transition-colors group @(currentFolder == "drafts" ? "bg-brand-50 dark:bg-slate-700/50 text-brand-700 dark:text-brand-400" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700/50")">
+        <div class="flex items-center gap-3">
+            <i class="ph ph-file-text text-xl @(currentFolder == "drafts" ? "text-brand-600 dark:text-brand-400" : "text-gray-500 group-hover:text-brand-600 dark:group-hover:text-brand-400") transition-colors"></i>
+            <span class="sidebar-text font-medium text-sm">@Localizer["drafts"]</span>
+        </div>
+
+        @if (Model.DraftsTotal > 0)
+        {
+            <span class="sidebar-badge bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300 py-0.5 px-2 rounded-full text-xs font-bold">@Model.DraftsTotal</span>
+        }
+    </a>
+</nav>

@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+
+	<data name="app_name" xml:space="preserve">
+    <value>نکس‌میل</value>
+  </data>
+	<data name="compose" xml:space="preserve">
+    <value>ایمیل جدید</value>
+  </data>
+	<data name="inbox" xml:space="preserve">
+    <value>صندوق ورودی</value>
+  </data>
+	<data name="starred" xml:space="preserve">
+    <value>ستاره‌دار</value>
+  </data>
+	<data name="snoozed" xml:space="preserve">
+    <value>به تعویق افتاده</value>
+  </data>
+	<data name="sent" xml:space="preserve">
+    <value>ارسال شده</value>
+  </data>
+	<data name="drafts" xml:space="preserve">
+    <value>پیش‌نویس‌ها</value>
+  </data>
+	<data name="trash" xml:space="preserve">
+    <value>زباله‌دان</value>
+  </data>
+	<data name="labels" xml:space="preserve">
+    <value>برچسب‌ها</value>
+  </data>
+	<data name="label_work" xml:space="preserve">
+    <value>کاری</value>
+  </data>
+	<data name="label_personal" xml:space="preserve">
+    <value>شخصی</value>
+  </data>
+	<data name="app_email" xml:space="preserve">
+    <value>ایمیل</value>
+  </data>
+	<data name="app_chat" xml:space="preserve">
+    <value>چت</value>
+  </data>
+	<data name="app_meet" xml:space="preserve">
+    <value>جلسه</value>
+  </data>
+	<data name="tab_primary" xml:space="preserve">
+    <value>اصلی</value>
+  </data>
+	<data name="tab_social" xml:space="preserve">
+    <value>اجتماعی</value>
+  </data>
+	<data name="tab_promotions" xml:space="preserve">
+    <value>تبلیغات</value>
+  </data>
+	<data name="badge_new" xml:space="preserve">
+    <value>جدید</value>
+  </data>
+	<data name="action_archive" xml:space="preserve">
+    <value>آرشیو</value>
+  </data>
+	<data name="action_spam" xml:space="preserve">
+    <value>اسپم</value>
+  </data>
+	<data name="action_delete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+	<data name="action_send" xml:space="preserve">
+    <value>ارسال</value>
+  </data>
+	<data name="search_placeholder" xml:space="preserve">
+    <value>جستجو در ایمیل‌ها...</value>
+  </data>
+	<data name="reply_placeholder" xml:space="preserve">
+    <value>پاسخ خود را اینجا بنویسید...</value>
+  </data>
+	<data name="user_name" xml:space="preserve">
+    <value>امیرحسین موسوی</value>
+  </data>
+	<data name="account_settings" xml:space="preserve">
+    <value>مدیریت حساب</value>
+  </data>
+	<data name="logout" xml:space="preserve">
+    <value>خروج</value>
+  </data>
+	<data name="empty_email_selection" xml:space="preserve">
+    <value>برای مشاهده محتوا، یک ایمیل را از لیست انتخاب کنید.</value>
+  </data>
+	<data name="no_subject" xml:space="preserve">
+    <value>(بدون موضوع)</value>
+  </data>
+	<data name="click_to_view" xml:space="preserve">
+    <value>برای مشاهده کلیک کنید...</value>
+  </data>
+	<data name="empty_inbox_or_error" xml:space="preserve">
+    <value>صندوق ورودی خالی است یا خطایی در ارتباط رخ داد.</value>
+  </data>
+	<data name="setup_title" xml:space="preserve">
+    <value>راه‌اندازی اولیه سرور</value>
+  </data>
+	<data name="setup_subtitle" xml:space="preserve">
+    <value>لطفاً جزئیات سرور IMAP و SMTP را برای پیکربندی سیستم وارد کنید.</value>
+  </data>
+	<data name="imap_title" xml:space="preserve">
+    <value>سرور ورودی (IMAP)</value>
+  </data>
+	<data name="smtp_title" xml:space="preserve">
+    <value>سرور خروجی (SMTP)</value>
+  </data>
+	<data name="server_address" xml:space="preserve">
+    <value>آدرس سرور</value>
+  </data>
+	<data name="port" xml:space="preserve">
+    <value>پورت</value>
+  </data>
+	<data name="require_ssl" xml:space="preserve">
+    <value>نیاز به اتصال امن (SSL/TLS)</value>
+  </data>
+	<data name="test_connection" xml:space="preserve">
+    <value>تست اتصال</value>
+  </data>
+	<data name="save_continue" xml:space="preserve">
+    <value>ذخیره و ادامه</value>
+  </data>
+	<data name="testing_connection" xml:space="preserve">
+    <value>در حال تست ارتباط...</value>
+  </data>
+	<data name="testing_wait_msg" xml:space="preserve">
+    <value>لطفاً تا بررسی سرورها منتظر بمانید.</value>
+  </data>
+	<data name="close" xml:space="preserve">
+    <value>بستن</value>
+  </data>
+	<data name="fill_all_fields" xml:space="preserve">
+    <value>لطفاً پیش از تست، تمام فیلدهای سرور و پورت را پر کنید.</value>
+  </data>
+	<data name="network_error" xml:space="preserve">
+    <value>خطای شبکه</value>
+  </data>
+	<data name="network_error_msg" xml:space="preserve">
+    <value>ارتباط با سرور برقرار نشد. لطفاً اتصال اینترنت خود را بررسی کنید.</value>
+  </data>
+	<data name="connection_failed" xml:space="preserve">
+    <value>خطا در اتصال:</value>
+  </data>
+	<data name="imap_connection_failed" xml:space="preserve">
+    <value>خطا در اتصال IMAP</value>
+  </data>
+	<data name="smtp_connection_failed" xml:space="preserve">
+    <value>خطا در اتصال SMTP</value>
+  </data>
+	<data name="connection_successful" xml:space="preserve">
+    <value>اتصال موفقیت‌آمیز بود</value>
+  </data>
+	<data name="connection_successful_msg" xml:space="preserve">
+    <value>ارتباط با هر دو سرور IMAP و SMTP برقرار شد.</value>
+  </data>
+</root>

@@ -1,0 +1,61 @@
+﻿@using MailKit
+@using Microsoft.AspNetCore.Mvc.Localization
+@using WebMail.Web
+@inject IHtmlLocalizer<SharedResource> Localizer
+@model IEnumerable<IMessageSummary>
+
+<div class="flex-1 overflow-y-auto">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var message in Model)
+        {
+            var envelope = message.Envelope;
+            var senderName = envelope.From.Count > 0 ? envelope.From[0].Name : envelope.From.ToString();
+            var avatarChar = !string.IsNullOrEmpty(senderName) ? senderName.Substring(0, 1).ToUpper() : "?";
+
+            // استفاده از کلمه ترجمه‌شده برای (بدون موضوع)
+            var subject = string.IsNullOrEmpty(envelope.Subject) ? Localizer["no_subject"].Value : envelope.Subject;
+
+            var timeString = envelope.Date.HasValue ? envelope.Date.Value.LocalDateTime.ToString("HH:mm") : "";
+            var isRead = message.Flags.HasValue && message.Flags.Value.HasFlag(MessageFlags.Seen);
+
+            <div class="relative group border-b border-gray-200 dark:border-slate-700 @(isRead ? "bg-white dark:bg-slate-800" : "bg-blue-50/40 dark:bg-slate-800/80") hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
+
+                <div class="absolute right-4 top-6 z-20">
+                    <input type="checkbox" name="selectedUids" value="@message.UniqueId.Id"
+                           class="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-slate-800">
+                </div>
+
+                <a href="@Url.Action("Detail", "Home", new { uid = message.UniqueId.Id, folder = ViewBag.CurrentFolder })" class="block p-4 pr-11">
+                    <div class="flex items-start gap-3">
+                        <div class="relative flex flex-col items-center pt-1 w-10 h-10 shrink-0">
+                            @if (!isRead)
+                            {
+                                <span class="absolute top-1 -left-1 w-3 h-3 rounded-full bg-blue-500 border-2 border-white dark:border-slate-800 z-10"></span>
+                            }
+                            <div class="w-full h-full rounded-full @(isRead ? "bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-200" : "bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400") flex items-center justify-center font-bold text-lg">
+                                @avatarChar
+                            </div>
+                        </div>
+
+                        <div class="flex-1 min-w-0 pe-1">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <h4 class="truncate text-sm @(isRead ? "font-normal text-gray-700 dark:text-gray-300" : "font-bold text-gray-900 dark:text-white")">@senderName</h4>
+                                <span class="text-xs shrink-0 ms-2 @(isRead ? "text-gray-500" : "text-blue-600 dark:text-blue-400 font-bold")" dir="ltr">@timeString</span>
+                            </div>
+                            <h5 class="text-sm truncate mb-1 @(isRead ? "text-gray-800 dark:text-gray-100 font-medium" : "text-gray-900 dark:text-white font-bold")">@subject</h5>
+
+                            <p class="text-xs text-gray-500 line-clamp-1">@Localizer["click_to_view"]</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="p-8 text-center text-gray-500 dark:text-gray-400 text-sm">
+            @Localizer["empty_inbox_or_error"]
+        </div>
+    }
+</div>

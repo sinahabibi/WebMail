@@ -1,0 +1,7 @@
+{
+  "SmtpServer": "smtp.gmail.com",
+  "SmtpPort": 465,
+  "ImapServer": "imap.gmail.com",
+  "ImapPort": 993,
+  "UseSsl": true
+}

@@ -1,0 +1,78 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using WebMail.Web
+@inject IHtmlLocalizer<SharedResource> Localizer
+@model WebMail.Web.Models.EmailDetailViewModel
+@{
+    // استفاده از کلمه ترجمه‌شده برای عنوان صفحه
+    ViewData["Title"] = Localizer["inbox"].Value;
+}
+
+<article id="detail-pane" class="flex-1 flex flex-col bg-white dark:bg-slate-900 w-full h-full relative z-0">
+
+    @if (Model == null)
+    {
+        <div class="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-slate-800/50">
+            <div class="text-center">
+                <i class="ph ph-envelope-open text-5xl mb-3 opacity-30"></i>
+                <p class="text-sm font-medium">@Localizer["empty_email_selection"]</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="flex-1 flex flex-col h-full overflow-hidden">
+            <div class="px-6 py-3 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2">
+                    <a href="@Url.Action("Index", "Home")" class="md:hidden p-2 text-gray-600 hover:bg-gray-200 dark:hover:bg-slate-600 rounded transition-colors">
+                        <i class="ph ph-arrow-right text-xl"></i>
+                    </a>
+                    <button class="px-4 py-1.5 bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-slate-600 rounded text-sm transition-colors flex items-center gap-2">
+                        <i class="ph ph-trash"></i> @Localizer["action_delete"]
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 lg:p-10 bg-white dark:bg-slate-900">
+                <div class="max-w-4xl mx-auto w-full">
+
+                    <div class="mb-6">
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-50 mb-6 leading-relaxed">@Model.Subject</h1>
+
+                        <div class="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-slate-800">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-600 dark:text-gray-300 font-bold border border-gray-200 dark:border-slate-700">
+                                    @(string.IsNullOrEmpty(Model.SenderName) ? "?" : Model.SenderName.Substring(0, 1).ToUpper())
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-900 dark:text-gray-100 mb-0.5">@Model.SenderName</div>
+                                    <div class="text-xs text-gray-500" dir="ltr">@Model.SenderAddress</div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-500" dir="ltr">
+                                @Model.Date.ToString("yyyy/MM/dd HH:mm")
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full bg-white border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                        @if (!string.IsNullOrEmpty(Model.HtmlBody))
+                        {
+                            <div style="all: initial; display: block; width: 100%; min-height: 200px;">
+                                <template shadowrootmode="open">
+                                    @Html.Raw(Model.HtmlBody)
+                                </template>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="p-6 lg:p-8 bg-gray-50 dark:bg-slate-800/30">
+                                <pre class="font-sans whitespace-pre-wrap text-gray-800 dark:text-gray-200 text-sm sm:text-base leading-loose" dir="auto">@Model.TextBody</pre>
+                            </div>
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+</article>

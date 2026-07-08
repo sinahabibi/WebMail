@@ -1,0 +1,457 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexMail - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@500;700&display=swap');
+
+        body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: 'Inter', sans-serif;
+        background-color: #030407; /* Extremely dark, almost pure black */
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #ffffff;
+        }
+
+        #canvas-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+        perspective: 1000px;
+        }
+
+        /* 3D Layers for Parallax Effect */
+        #stars-layer-1, #stars-layer-2, #stars-layer-3 {
+        position: absolute;
+        top: -5%;
+        left: -5%;
+        width: 110%;
+        height: 110%;
+        transition: transform 0.1s ease-out;
+        }
+
+        .star {
+        position: absolute;
+        background-color: #ffffff;
+        border-radius: 50%;
+        opacity: 0;
+        animation: twinkle var(--twinkle-duration, 3s) ease-in-out infinite alternate;
+        animation-delay: var(--twinkle-delay, 0s);
+        }
+
+        @@keyframes twinkle {
+        0% {
+        opacity: 0.1;
+        transform: scale(0.8);
+        }
+
+        100% {
+        opacity: var(--max-opacity, 0.8);
+        transform: scale(1.2);
+        box-shadow: 0 0 8px rgba(255,255,255,0.6);
+        }
+        }
+
+        .shooting-star {
+        position: absolute;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255, 255, 255, 1));
+        animation: shoot var(--shoot-duration, 2s) cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        opacity: 0;
+        transform-origin: left center;
+        /* Variables set by JS */
+        top: var(--start-y);
+        left: var(--start-x);
+        width: var(--tail-length, 150px);
+        transform: rotate(var(--angle, 15deg));
+        }
+
+        /* Glowing head of the shooting star */
+        .shooting-star::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 3px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        box-shadow: 0 0 15px 3px rgba(255, 255, 255, 0.8), 0 0 30px 6px rgba(59, 130, 246, 0.6);
+        }
+
+        @@keyframes shoot {
+        0% {
+        transform: rotate(var(--angle)) translateX(0);
+        opacity: 0;
+        }
+
+        10% {
+        opacity: 1;
+        }
+
+        80% {
+        opacity: 1;
+        }
+
+        100% {
+        transform: rotate(var(--angle)) translateX(var(--distance, -1000px));
+        opacity: 0;
+        }
+        }
+
+        .glowing-orb {
+        position: absolute;
+        width: 45vw;
+        height: 45vw;
+        max-width: 600px;
+        max-height: 600px;
+        background: radial-gradient(circle, rgba(17, 34, 105, 0.4) 0%, rgba(8, 15, 41, 0.2) 40%, rgba(0,0,0,0) 70%);
+        border-radius: 50%;
+        filter: blur(60px);
+        z-index: 1;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: orb-pulse 8s ease-in-out infinite alternate;
+        transition: transform 0.2s ease-out; /* For mouse parallax */
+        }
+
+        @@keyframes orb-pulse {
+        0% {
+        opacity: 0.5;
+        transform: translate(-50%, -50%) scale(0.9);
+        }
+
+        100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+        }
+        }
+
+        .glass-wrapper {
+        position: relative;
+        z-index: 10;
+        transition: transform 0.1s ease-out; /* Parallax target */
+        }
+
+        .glass-form {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-left: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+        border-radius: 24px;
+        padding: 50px 40px;
+        width: 100%;
+        max-width: 420px;
+        display: flex;
+        flex-direction: column;
+        gap: 35px;
+        }
+
+        .brand-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: center;
+        letter-spacing: 0.05em;
+        background: linear-gradient(to right, #ffffff, #9ca3af);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+        }
+
+        .input-group {
+        position: relative;
+        width: 100%;
+        }
+
+        .input-field {
+        width: 100%;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        padding: 10px 0;
+        font-size: 1rem;
+        font-family: 'Inter', sans-serif;
+        outline: none;
+        transition: border-color 0.3s ease;
+        }
+
+        /* Remove auto-fill background */
+        .input-field:-webkit-autofill,
+        .input-field:-webkit-autofill:hover,
+        .input-field:-webkit-autofill:focus,
+        .input-field:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #0a0b10 inset !important;
+        -webkit-text-fill-color: white !important;
+        transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .input-label {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        color: rgba(255, 255, 255, 0.4);
+        pointer-events: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 1rem;
+        }
+
+        /* Floating effect */
+        .input-field:focus ~ .input-label,
+        .input-field:valid ~ .input-label {
+        top: -20px;
+        font-size: 0.75rem;
+        color: #60a5fa; /* Tailwind Blue 400 */
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-weight: 500;
+        }
+
+        /* Animated glowing underline */
+        .input-highlight {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 1px;
+        width: 0;
+        background: #60a5fa;
+        box-shadow: 0 0 10px 1px rgba(96, 165, 250, 0.7);
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-field:focus ~ .input-highlight {
+        width: 100%;
+        }
+
+        .login-btn {
+        position: relative;
+        background: transparent;
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 16px;
+        border-radius: 12px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        margin-top: 10px;
+        }
+
+        .login-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.5), transparent);
+        transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: -1;
+        }
+
+        .login-btn:hover {
+        border-color: rgba(96, 165, 250, 0.6);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        transform: translateY(-2px);
+        }
+
+        .login-btn:hover::before {
+        left: 100%;
+        }
+
+        .login-btn:active {
+        transform: translateY(0);
+        }
+
+        /* Custom styling for validation summary to match glassmorphism theme */
+        .validation-summary-errors ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        }
+
+        .validation-summary-errors li {
+        margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container">
+        <!-- Parallax layers for stars to create depth -->
+        <div id="stars-layer-1"></div>
+        <div id="stars-layer-2"></div>
+        <div id="stars-layer-3"></div>
+
+        <!-- Shooting stars container -->
+        <div id="shooting-stars-container" class="absolute top-0 left-0 w-full h-full overflow-hidden"></div>
+    </div>
+
+    <div class="glowing-orb" id="orb"></div>
+
+    <div class="glass-wrapper" id="glass-form-container">
+        <div class="glass-form">
+            <h2 class="brand-title">NexMail</h2>
+
+            <form asp-controller="Auth" asp-action="Login" method="post">
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 25px; text-align: center; backdrop-filter: blur(4px);">
+                        @Html.ValidationSummary(false, "")
+                    </div>
+                }
+
+                <div class="input-group">
+                    <input type="email" id="email" name="email" class="input-field" required autocomplete="off">
+                    <label for="email" class="input-label">Email Address</label>
+                    <div class="input-highlight"></div>
+                </div>
+
+                <div class="input-group mt-10">
+                    <input type="password" id="password" name="password" class="input-field" required>
+                    <label for="password" class="input-label">Password</label>
+                    <div class="input-highlight"></div>
+                </div>
+
+                <button type="submit" class="login-btn w-full mt-12">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+        // --- 1. Starfield Generation ---
+        function createStars(layerId, count, minSize, maxSize, opacityRange) {
+        const layer = document.getElementById(layerId);
+        for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+
+        const size = Math.random() * (maxSize - minSize) + minSize;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.left = `${Math.random() * 100}%`;
+
+        // Custom CSS variables for organic twinkling
+        star.style.setProperty('--twinkle-duration', `${Math.random() * 3 + 2}s`);
+        star.style.setProperty('--twinkle-delay', `${Math.random() * 5}s`);
+        star.style.setProperty('--max-opacity', `${Math.random() * (opacityRange[1] - opacityRange[0]) + opacityRange[0]}`);
+
+        layer.appendChild(star);
+        }
+        }
+
+        // Create depth with 3 layers of stars
+        createStars('stars-layer-1', 100, 0.5, 1.5, [0.2, 0.5]); // Distant, small
+        createStars('stars-layer-2', 50, 1.5, 2.5, [0.4, 0.8]); // Midground
+        createStars('stars-layer-3', 20, 2.5, 4, [0.6, 1.0]);   // Foreground, bright
+
+        // --- 2. Dynamic Shooting Stars ---
+        const shootingStarsContainer = document.getElementById('shooting-stars-container');
+
+        function spawnShootingStar() {
+        const star = document.createElement('div');
+        star.classList.add('shooting-star');
+
+        // Randomize starting position (mostly top and right edges)
+        const startX = Math.random() > 0.5 ? 100 : Math.random() * 100;
+        const startY = startX === 100 ? Math.random() * 80 : -10;
+
+        // Randomize characteristics
+        const angle = 15 + (Math.random() * 20); // 15 to 35 degrees downwards
+        const distance = - (800 + Math.random() * 1000); // How far it travels (leftwards)
+        const duration = 1 + Math.random() * 1.5; // 1s to 2.5s
+        const tailLength = 100 + Math.random() * 150; // 100px to 250px
+
+        // Set CSS variables
+        star.style.setProperty('--start-x', `${startX}%`);
+        star.style.setProperty('--start-y', `${startY}%`);
+        star.style.setProperty('--angle', `${angle}deg`);
+        star.style.setProperty('--distance', `${distance}px`);
+        star.style.setProperty('--shoot-duration', `${duration}s`);
+        star.style.setProperty('--tail-length', `${tailLength}px`);
+
+        shootingStarsContainer.appendChild(star);
+
+        // Cleanup after animation finishes
+        setTimeout(() => {
+        if (star.parentNode) {
+        star.remove();
+        }
+        }, duration * 1000);
+        }
+
+        // Spawn shooting stars randomly with varied intervals
+        function scheduleNextShootingStar() {
+        const nextTime = 2000 + (Math.random() * 6000); // Every 2 to 8 seconds
+        setTimeout(() => {
+        spawnShootingStar();
+        scheduleNextShootingStar();
+        }, nextTime);
+        }
+        scheduleNextShootingStar();
+
+        // --- 3. Interactive Mouse Parallax Effect ---
+        // This is crucial for the "Awwwards" premium feel
+        const layer1 = document.getElementById('stars-layer-1');
+        const layer2 = document.getElementById('stars-layer-2');
+        const layer3 = document.getElementById('stars-layer-3');
+        const orb = document.getElementById('orb');
+        const form = document.getElementById('glass-form-container');
+
+        document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX - window.innerWidth / 2) / window.innerWidth;
+        const y = (e.clientY - window.innerHeight / 2) / window.innerHeight;
+
+        // Move layers at different speeds (depth illusion)
+        layer1.style.transform = `translate(${x * 10}px, ${y * 10}px)`;
+        layer2.style.transform = `translate(${x * 20}px, ${y * 20}px)`;
+        layer3.style.transform = `translate(${x * 40}px, ${y * 40}px)`;
+
+        // Move orb slightly in opposite direction
+        orb.style.transform = `translate(calc(-50% - ${x * 30}px), calc(-50% - ${y * 30}px))`;
+
+        // Very subtle tilt/move on the glass form
+        form.style.transform = `translate(${x * -15}px, ${y * -15}px) rotateX(${y * -5}deg) rotateY(${x * 5}deg)`;
+        });
+
+        // Reset transforms when mouse leaves window
+        document.addEventListener('mouseleave', () => {
+        layer1.style.transform = 'translate(0, 0)';
+        layer2.style.transform = 'translate(0, 0)';
+        layer3.style.transform = 'translate(0, 0)';
+        orb.style.transform = 'translate(-50%, -50%)';
+        form.style.transform = 'translate(0, 0) rotateX(0) rotateY(0)';
+        });
+        });
+    </script>
+</body>
+</html>

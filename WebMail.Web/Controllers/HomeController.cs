@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -92,6 +92,29 @@ namespace WebMail.Web.Controllers
             );
 
             return LocalRedirect(returnUrl ?? "/");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Send(string to, string subject, string body)
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            var protectedPassword = User.FindFirst("MailPassword")?.Value;
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(protectedPassword))
+            {
+                return Json(new { success = false, message = "کاربر وارد نشده است." });
+            }
+
+            var password = _protector.Unprotect(protectedPassword);
+
+            try
+            {
+                await Task.Run(() => _mailService.SendEmail(email, password, to, subject ?? "", body ?? ""));
+                return Json(new { success = true, message = "ایمیل با موفقیت ارسال شد." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "خطا در ارسال ایمیل: " + ex.Message });
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

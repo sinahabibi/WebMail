@@ -1,4 +1,4 @@
-﻿using MailKit.Net.Imap;
+using MailKit.Net.Imap;
 using MailKit.Security;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -77,5 +77,12 @@ namespace WebMail.Web.Controllers
                 return View();
             }
         }
-}
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Auth");
+        }
+    }
 }

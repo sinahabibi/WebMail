@@ -1,4 +1,4 @@
-﻿@using System.Globalization
+@using System.Globalization
 @using Microsoft.AspNetCore.Mvc.Localization
 @using WebMail.Web
 @inject IHtmlLocalizer<SharedResource> Localizer
@@ -15,6 +15,7 @@
 
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet" />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -149,6 +150,56 @@
         .sidebar-mini .app-btn {
         padding: 0.5rem;
         }
+
+        /* Quill theme overrides for dark/light mode */
+        .ql-toolbar {
+            border: none !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            background-color: #f8fafc;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .dark .ql-toolbar {
+            border-bottom: 1px solid #334155 !important;
+            background-color: #0f172a;
+        }
+        .dark .ql-toolbar .ql-stroke {
+            stroke: #cbd5e1 !important;
+        }
+        .dark .ql-toolbar .ql-fill {
+            fill: #cbd5e1 !important;
+        }
+        .dark .ql-toolbar .ql-picker {
+            color: #cbd5e1 !important;
+        }
+        .dark .ql-toolbar .ql-picker-options {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+        #quill-editor {
+            font-family: 'Vazirmatn', 'Inter', sans-serif !important;
+            border: none !important;
+            min-height: 150px;
+        }
+        .dark .ql-container {
+            border: none !important;
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+        .ql-container {
+            border: none !important;
+            background-color: #ffffff;
+            font-size: 0.875rem !important;
+        }
+        .ql-editor.ql-blank::before {
+            color: #94a3b8 !important;
+            font-style: normal !important;
+            left: 15px !important;
+            right: 15px !important;
+        }
+        .dark .ql-editor.ql-blank::before {
+            color: #475569 !important;
+        }
     </style>
 </head>
 
@@ -212,16 +263,16 @@
 
     <div class="relative ms-1">
         <button id="profile-btn" class="h-8 w-8 md:h-9 md:w-9 rounded-full bg-gray-200 dark:bg-slate-700 p-0.5 cursor-pointer flex items-center justify-center relative">
-            <img src="https://placehold.co/100x100/1e293b/ffffff?text=ME" alt="User" class="w-full h-full rounded-full border border-gray-300 dark:border-slate-600 object-cover">
+            <img src="https://placehold.co/100x100/1e293b/ffffff?text=@(User.Identity?.Name != null && User.Identity.Name.Length >= 2 ? User.Identity.Name.Substring(0, 2).ToUpper() : "US")" alt="User" class="w-full h-full rounded-full border border-gray-300 dark:border-slate-600 object-cover">
             <div class="absolute bottom-0 end-0 w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-slate-800 rounded-full"></div>
         </button>
 
         <div id="profile-menu" class="absolute end-0 mt-2 w-64 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hidden flex-col py-2 z-50">
             <div class="px-4 py-3 border-b border-gray-100 dark:border-slate-700">
-                <p class="text-sm font-bold text-gray-900 dark:text-white">@Localizer["user_name"]</p>
+                <p class="text-sm font-bold text-gray-900 dark:text-white" dir="ltr">@User.Identity?.Name</p>
             </div>
             <div class="border-t border-gray-100 dark:border-slate-700 py-1">
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
+                <a href="@Url.Action("Logout", "Auth")" class="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
                     <i class="ph ph-sign-out text-lg"></i> <span>@Localizer["logout"]</span>
                 </a>
             </div>
@@ -290,8 +341,80 @@
 
     @RenderBody()
 
+    <!-- Compose Panel (Floating Dock) -->
+    <div id="compose-modal" class="fixed bottom-0 end-4 z-50 hidden flex-col w-[540px] max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-800 rounded-t-xl border border-gray-200 dark:border-slate-700 shadow-2xl transition-all duration-300 transform translate-y-0 select-none">
+        <!-- Panel Header -->
+        <div id="compose-header" class="px-4 py-3 bg-gray-900 text-white rounded-t-xl flex items-center justify-between cursor-pointer select-none">
+            <div class="flex items-center gap-2">
+                <i class="ph ph-pencil-simple text-brand-400 text-lg"></i>
+                <span class="text-sm font-bold tracking-wide">@Localizer["compose"]</span>
+            </div>
+            <div class="flex items-center gap-1.5" onclick="event.stopPropagation();">
+                <!-- Minimize button -->
+                <button id="minimize-compose-btn" type="button" class="p-1 hover:bg-white/10 rounded transition-colors text-gray-300 hover:text-white" title="Minimize">
+                    <i id="minimize-icon" class="ph ph-minus text-base"></i>
+                </button>
+                <!-- Maximize button -->
+                <button id="maximize-compose-btn" type="button" class="p-1 hover:bg-white/10 rounded transition-colors text-gray-300 hover:text-white" title="Maximize">
+                    <i id="maximize-icon" class="ph ph-corners-out text-base"></i>
+                </button>
+                <!-- Close button -->
+                <button id="close-compose-btn" type="button" class="p-1 hover:bg-white/10 rounded transition-colors text-gray-300 hover:text-white" title="Close">
+                    <i class="ph ph-x text-base"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel Content wrapper (collapsible) -->
+        <div id="compose-body-wrapper" class="flex flex-col flex-1 h-[450px] transition-all duration-300">
+            <!-- Modal Body / Form -->
+            <form id="compose-form" method="post" action="@Url.Action("Send", "Home")" class="flex-1 flex flex-col p-4 space-y-3 m-0 overflow-y-auto">
+                @Html.AntiForgeryToken()
+                
+                <!-- Recipient field (Gmail-like flat styling) -->
+                <div class="flex items-center border-b border-gray-100 dark:border-slate-700/50 py-1.5">
+                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-16 shrink-0">@Localizer["to"]:</span>
+                    <input type="email" id="compose-to" name="to" required placeholder="example@domain.com"
+                           class="flex-1 bg-transparent border-none text-sm outline-none transition-all dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 focus:ring-0 p-0">
+                </div>
+
+                <!-- Subject field (Gmail-like flat styling) -->
+                <div class="flex items-center border-b border-gray-100 dark:border-slate-700/50 py-1.5">
+                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-16 shrink-0">@Localizer["subject"]:</span>
+                    <input type="text" id="compose-subject" name="subject" placeholder="@Localizer["no_subject"]"
+                           class="flex-1 bg-transparent border-none text-sm outline-none transition-all dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 focus:ring-0 p-0">
+                </div>
+
+                <!-- Quill Editor container -->
+                <div class="flex-1 flex flex-col min-h-[180px] overflow-hidden relative border border-gray-100 dark:border-slate-700/50 rounded-lg">
+                    <!-- Textarea hidden to bind quill HTML -->
+                    <textarea id="compose-body" name="body" required class="hidden"></textarea>
+                    <!-- Quill container -->
+                    <div id="quill-editor" class="flex-1 overflow-y-auto text-sm text-gray-900 dark:text-gray-100 dark:bg-slate-900 p-0" style="border: none;"></div>
+                </div>
+
+                <!-- Alert Container -->
+                <div id="compose-alert" class="hidden p-3.5 rounded-lg text-sm border"></div>
+
+                <!-- Panel Footer -->
+                <div class="pt-3 border-t border-gray-100 dark:border-slate-700/50 flex items-center justify-between shrink-0">
+                    <div class="flex items-center gap-2">
+                        <button type="submit" id="send-compose-btn" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg text-sm transition-all flex items-center gap-2 shadow-md shadow-brand-500/20 active:scale-95">
+                            <span id="send-btn-text">@Localizer["action_send"]</span>
+                            <i id="send-btn-icon" class="ph ph-paper-plane-tilt text-base"></i>
+                        </button>
+                    </div>
+                    <button type="button" id="cancel-compose-btn" class="p-2 text-gray-500 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-lg transition-colors" title="Discard">
+                        <i class="ph ph-trash text-lg"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
 
@@ -437,6 +560,174 @@
     // The classes depend on LTR/RTL, but a simple way is just hide it on mobile
     detailPane.classList.add('hidden');
     });
+    }
+
+    // --- Compose Panel Logic ---
+    const composeBtn = document.getElementById('compose-btn');
+    const composeModal = document.getElementById('compose-modal');
+    const closeComposeBtn = document.getElementById('close-compose-btn');
+    const cancelComposeBtn = document.getElementById('cancel-compose-btn');
+    const minimizeComposeBtn = document.getElementById('minimize-compose-btn');
+    const maximizeComposeBtn = document.getElementById('maximize-compose-btn');
+    const composeHeader = document.getElementById('compose-header');
+    const bodyWrapper = document.getElementById('compose-body-wrapper');
+    const composeForm = document.getElementById('compose-form');
+    const composeAlert = document.getElementById('compose-alert');
+    const sendComposeBtn = document.getElementById('send-compose-btn');
+    const sendBtnText = document.getElementById('send-btn-text');
+    const sendBtnIcon = document.getElementById('send-btn-icon');
+    const minimizeIcon = document.getElementById('minimize-icon');
+    const maximizeIcon = document.getElementById('maximize-icon');
+
+    let quill;
+    let isMinimized = false;
+    let isMaximized = false;
+
+    function initQuill() {
+        if (!quill) {
+            quill = new Quill('#quill-editor', {
+                theme: 'snow',
+                placeholder: '@Localizer["reply_placeholder"]',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'direction': 'rtl' }],
+                        ['clean']
+                    ]
+                }
+            });
+        }
+    }
+
+    function openComposeModal() {
+        composeModal.classList.remove('hidden');
+        composeModal.classList.add('flex');
+        initQuill();
+        
+        // Restore defaults
+        isMinimized = false;
+        isMaximized = false;
+        composeModal.style.width = '540px';
+        bodyWrapper.style.height = '450px';
+        bodyWrapper.classList.remove('overflow-hidden');
+        minimizeIcon.className = 'ph ph-minus text-base';
+        maximizeIcon.className = 'ph ph-corners-out text-base';
+    }
+
+    function closeComposeModal() {
+        composeModal.classList.add('hidden');
+        composeModal.classList.remove('flex');
+        composeForm.reset();
+        if (quill) {
+            quill.setContents([]);
+        }
+        composeAlert.classList.add('hidden');
+        composeAlert.className = 'hidden p-3.5 rounded-lg text-sm border';
+    }
+
+    function toggleMinimize() {
+        isMinimized = !isMinimized;
+        if (isMinimized) {
+            bodyWrapper.style.height = '0px';
+            bodyWrapper.classList.add('overflow-hidden');
+            minimizeIcon.className = 'ph ph-caret-up text-base';
+        } else {
+            bodyWrapper.style.height = isMaximized ? '600px' : '450px';
+            bodyWrapper.classList.remove('overflow-hidden');
+            minimizeIcon.className = 'ph ph-minus text-base';
+        }
+    }
+
+    function toggleMaximize() {
+        isMaximized = !isMaximized;
+        if (isMaximized) {
+            composeModal.style.width = '800px';
+            bodyWrapper.style.height = '600px';
+            maximizeIcon.className = 'ph ph-corners-in text-base';
+        } else {
+            composeModal.style.width = '540px';
+            bodyWrapper.style.height = '450px';
+            maximizeIcon.className = 'ph ph-corners-out text-base';
+        }
+        // If minimized, restore it
+        if (isMinimized) {
+            isMinimized = false;
+            bodyWrapper.classList.remove('overflow-hidden');
+            minimizeIcon.className = 'ph ph-minus text-base';
+        }
+    }
+
+    if (composeBtn && composeModal) {
+        composeBtn.addEventListener('click', openComposeModal);
+        closeComposeBtn.addEventListener('click', closeComposeModal);
+        cancelComposeBtn.addEventListener('click', closeComposeModal);
+        minimizeComposeBtn.addEventListener('click', toggleMinimize);
+        maximizeComposeBtn.addEventListener('click', toggleMaximize);
+        composeHeader.addEventListener('click', toggleMinimize);
+
+        // Form Submit via Ajax
+        composeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Populate hidden input with HTML from Quill
+            const htmlContent = quill.root.innerHTML;
+            const textContent = quill.getText().trim();
+
+            if (!textContent) {
+                composeAlert.classList.remove('hidden');
+                composeAlert.className = 'p-3.5 rounded-lg text-sm border border-red-200 bg-red-50 dark:bg-red-950/20 text-red-800 dark:text-red-300';
+                composeAlert.textContent = '@(currentLang == "fa" ? "لطفاً متن پیام را وارد کنید." : "Please enter the message body.")';
+                return;
+            }
+
+            document.getElementById('compose-body').value = htmlContent;
+
+            // Loading state
+            sendComposeBtn.disabled = true;
+            const originalIconClass = sendBtnIcon.className;
+            sendBtnIcon.className = 'ph ph-circle-notch animate-spin';
+            const originalText = sendBtnText.textContent;
+            sendBtnText.textContent = '@(currentLang == "fa" ? "در حال ارسال..." : "Sending...")';
+
+            composeAlert.classList.add('hidden');
+
+            const formData = new FormData(composeForm);
+            
+            try {
+                const response = await fetch(composeForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    composeAlert.classList.remove('hidden');
+                    composeAlert.className = 'p-3.5 rounded-lg text-sm border border-green-200 bg-green-50 dark:bg-green-950/20 text-green-800 dark:text-green-300';
+                    composeAlert.textContent = result.message;
+                    
+                    setTimeout(() => {
+                        closeComposeModal();
+                    }, 1500);
+                } else {
+                    composeAlert.classList.remove('hidden');
+                    composeAlert.className = 'p-3.5 rounded-lg text-sm border border-red-200 bg-red-50 dark:bg-red-950/20 text-red-800 dark:text-red-300';
+                    composeAlert.textContent = result.message;
+                }
+            } catch (err) {
+                composeAlert.classList.remove('hidden');
+                composeAlert.className = 'p-3.5 rounded-lg text-sm border border-red-200 bg-red-50 dark:bg-red-950/20 text-red-800 dark:text-red-300';
+                composeAlert.textContent = '@(currentLang == "fa" ? "خطا در برقراری ارتباط با سرور." : "Connection error with the server.")';
+            } finally {
+                sendComposeBtn.disabled = false;
+                sendBtnIcon.className = originalIconClass;
+                sendBtnText.textContent = originalText;
+            }
+        });
     }
     });
 </script>

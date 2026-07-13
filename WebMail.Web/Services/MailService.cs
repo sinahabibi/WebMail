@@ -1,4 +1,4 @@
-﻿using MailKit;
+using MailKit;
 using MailKit.Net.Imap;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Caching.Memory;
@@ -250,7 +250,9 @@ public class MailService : IDisposable, IAsyncDisposable
         message.From.Add(new MailboxAddress(fromEmail, fromEmail));
         message.To.Add(new MailboxAddress(to, to));
         message.Subject = subject;
-        message.Body = new TextPart("plain") { Text = body };
+
+        var bodyBuilder = new BodyBuilder { HtmlBody = body };
+        message.Body = bodyBuilder.ToMessageBody();
 
         using var client = new SmtpClient();
         client.Connect(config.SmtpServer, config.SmtpPort, config.UseSsl);
